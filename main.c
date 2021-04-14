@@ -39,7 +39,7 @@ int map[mapWidth][mapHeight]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+  {1,4,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -97,6 +97,7 @@ typedef struct s_var {
     float floorStepY;
     float floorX;
     float floorY;
+    double ZBuffer[WIDTH];
     //double movespeed;
 }               t_var;
 
@@ -125,14 +126,13 @@ typedef struct 	s_cub3d {
   t_text      text[5]; //nombre de texture que tu as 
 }				        t_cub3d;
 
-t_sprite sprite[2] =
+#define numSprites 2
+
+t_sprite sprite[numSprites] =
 {
-  {5, 5, 8},
+  {18, 7, 1},
   {5, 4, 8}
 };
-
-double ZBuffer[WIDTH];
-
 
 void		init_window(t_cub3d *cube)
 {
@@ -271,7 +271,7 @@ int     move(t_cub3d *cub) // .h
 	// 13 w
 	// 14 e 
 	// 1 s
-  double moveSpeed = 0.05;
+  double moveSpeed = 0.25;
   double rotSpeed = 0.05;
   if (cub->var.key_left == 1) //a gauche a
       {
@@ -425,9 +425,13 @@ int    raycasting(t_cub3d *cube)
       
     drawy(i, drawStart, drawEnd, cube);
        
-      ZBuffer[i] = cube->var.perpWallDist;
-       i++;                      
+      cube->var.ZBuffer[i] = cube->var.perpWallDist;
+      i++;                      
     }
+
+    
+  
+
     double spriteX = sprite[0].x - cube->var.posX;
     double spriteY = sprite[0].y - cube->var.posY;
       
@@ -465,7 +469,7 @@ int    raycasting(t_cub3d *cube)
       {
         x_text = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * img_size / spriteWidth) / 256;
         
-       if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < ZBuffer[stripe])
+       if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < cube->var.ZBuffer[stripe])
        {
           int y = drawStartY;
           while (y < drawEndY)
@@ -482,6 +486,7 @@ int    raycasting(t_cub3d *cube)
        }
       stripe++;
       }
+  
     mlx_put_image_to_window(cube->mlx.ptr, cube->mlx.win, cube->mlx.img.image, 0, 0);
 
     return (0);
@@ -524,7 +529,8 @@ void ft_start(t_cub3d *cube)
 
 int   load_texture(t_cub3d *cube)
 {
-  int width;int height;
+  int width;
+  int height;
 
   // cube->text[0].img = mlx_xpm_file_to_image(cube->mlx.ptr, "./images/1.xpm", &width, &height);
   // cube->text[0].img_addr = mlx_get_data_addr(cube->text[0].img, &(cube->text[0].bpp), &(cube->text[0].length), &(cube->text[0].endian));

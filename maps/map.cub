@@ -1,0 +1,16 @@
+R 1920 1080
+NO ./textures_xpm/red_bricks.xpm
+SO ./textures_xpm/green_bricks.xpm
+WE ./textures_xpm/yellow_bricks.xpm
+EA ./textures_xpm/blue_bricks.xpm
+
+S ./textures_xpm/barrel.xpm
+F 220,100,0
+C 225,30,0
+
+111111111
+100010001
+101010001
+100010001
+101000001
+111111111
