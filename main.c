@@ -560,7 +560,7 @@ int   load_texture(t_cub3d *cube)
 int		main(void)
 {
 	t_cub3d cube;
-  int width; int height;
+ 
 
 	init_window(&cube);
   init_var(&cube);
