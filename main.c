@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #define WIDTH 1200
-#define HEIGHT 800
+#define HEIGHT 700
 #define mapWidth 24
 #define mapHeight 24
 #define texWidth 64
@@ -79,8 +79,10 @@ typedef struct s_var {
     double rayDirX;
     double rayDirY;
     int     key_forward;
-    int     key_left;
+    int     key_rot_left;
     int     key_backward;
+    int     key_rot_right;
+    int     key_left;
     int     key_right;
     int     color;
     int     side;
@@ -273,7 +275,7 @@ int     move(t_cub3d *cub) // .h
 	// 1 s
   double moveSpeed = 0.25;
   double rotSpeed = 0.05;
-  if (cub->var.key_left == 1) //a gauche a
+  if (cub->var.key_rot_left == 1) //rotation gauche a
       {
         double oldDirX = cub->var.dirX;
         cub->var.dirX = cub->var.dirX * cos(rotSpeed) - cub->var.dirY * sin(rotSpeed);
@@ -289,7 +291,7 @@ int     move(t_cub3d *cub) // .h
         if(map[(int)cub->var.posX][(int)(cub->var.posY + cub->var.dirY * moveSpeed)] == 0) 
           cub->var.posY += cub->var.dirY * moveSpeed;
       }
-    if (cub->var.key_right == 1) // a droite e
+    if (cub->var.key_rot_right == 1) // rotation droite e
     {
       double oldDirX = cub->var.dirX;
       cub->var.dirX = cub->var.dirX * cos(-rotSpeed) - cub->var.dirY * sin(-rotSpeed);
@@ -298,13 +300,28 @@ int     move(t_cub3d *cub) // .h
       cub->var.planeX = cub->var.planeX * cos(-rotSpeed) - cub->var.planeY * sin(-rotSpeed);
       cub->var.planeY = oldPlaneX * sin(-rotSpeed) + cub->var.planeY * cos(-rotSpeed);
     }
+    if (cub->var.key_left == 1) // fleche a gauche fleche gauche
+    {
+      if (map[(int)(cub->var.posX)][(int)(cub->var.posY + cub->var.dirX * moveSpeed)] == 0)
+        cub->var.posY += cub->var.dirX * moveSpeed * 0.5;
+      if (map[(int)(cub->var.posX - cub->var.dirY * moveSpeed)][(int)(cub->var.posY)] == 0)
+        cub->var.posX -= cub->var.dirY * moveSpeed * 0.5;
+    }
+    if (cub->var.key_right == 1) // fleche a droite fleche droite
+    {
+      if (map[(int)(cub->var.posX)][(int)(cub->var.posY - cub->var.dirX * moveSpeed)] == 0)
+        cub->var.posY -= cub->var.dirX * moveSpeed;
+      if (map[(int)(cub->var.posX + cub->var.dirY * moveSpeed)][(int)(cub->var.posY)] == 0)
+        cub->var.posX += cub->var.dirY * moveSpeed;
+    }
     if (cub->var.key_backward == 1) // reculer s
     {
       if(map[(int)(cub->var.posX - cub->var.dirX * moveSpeed)][(int)(cub->var.posY)] == 0) 
         cub->var.posX -= cub->var.dirX * moveSpeed;
       if(map[(int)(cub->var.posX)][(int)(cub->var.posY - cub->var.dirY * moveSpeed)] == 0) 
         cub->var.posY -= cub->var.dirY * moveSpeed;
-    }  
+    }
+
     return (0);
 }
 
@@ -499,26 +516,37 @@ int   key_press(int key, t_cub3d *cube)
   if (key == 13)
     cube->var.key_forward = 1;
   if (key == 14)
-    cube->var.key_right = 1;
+    cube->var.key_rot_right = 1;
   if (key == 1)
     cube->var.key_backward = 1;
   if (key == 12)
+    cube->var.key_rot_left = 1;
+  if (key == 123)
     cube->var.key_left = 1;
+  if (key == 124)
+    cube->var.key_right = 1;
   return (0);
 }
 
 int   key_release(int key, t_cub3d *cube)
 {
+  //123 fleche a gauche
+  //124 fleche a droite
   if (key == 53)
     return(ft_close(cube));
   if (key == 13)
     cube->var.key_forward = 0;
   if (key == 14)
-    cube->var.key_right = 0;
+    cube->var.key_rot_right = 0;
   if (key == 1)
     cube->var.key_backward = 0;
   if (key == 12)
+    cube->var.key_rot_left = 0;
+    if (key == 123)
     cube->var.key_left = 0;
+  if (key == 124)
+    cube->var.key_right = 0;
+
   return (0);
 }
 
@@ -572,6 +600,7 @@ int		main(void)
   
   mlx_hook(cube.mlx.win, 2, 0, key_press, &cube);
   mlx_hook(cube.mlx.win, 3, 0, key_release, &cube);
+  mlx_hook(cube.mlx.win, 17, 0, ft_close, &cube);
 
   //mlx_hook(cube.mlx.win, key_release, &cub);
   // mlx_hook(&cube, raycasting, &cub);
