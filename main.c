@@ -190,7 +190,6 @@ void	pixel_put(t_cub3d *cube, int x, int y, int color)
 	cube->mlx.img.addr[len] = b;
 	cube->mlx.img.addr[len + 1] = g;
 	cube->mlx.img.addr[len + 2] = r;
-  
 }
 
 void    sky(t_cub3d *cube, int column, int y)
@@ -228,8 +227,7 @@ void	put_wall_texture(t_cub3d *cube, int column, int y, int end)
 	while (y < end)
 	{
 		len = 4 * ((WIDTH) * y + column);
-		y_text = abs((((y * 256 - HEIGHT * 128 + cube->var.lineheight * 128) * img_size) 
-    / cube->var.lineheight) / 256); // 128 et 256 to avoid float
+		y_text = abs((((y * 256 - HEIGHT * 128 + cube->var.lineheight * 128) * img_size) / cube->var.lineheight) / 256); // 128 et 256 to avoid float
     ft_memcpy(&cube->mlx.img.addr[len], &cube->text[cube->var.text_num].img_addr[y_text % img_size * cube->text[cube->var.text_num].length + 
     (int)x_text % img_size * (cube->text[cube->var.text_num].bpp / 8)], sizeof(int));
     y++;
@@ -423,87 +421,87 @@ int    raycasting(t_cub3d *cube)
       if(drawEnd >= HEIGHT)
         drawEnd = HEIGHT - 1;
       cube->var.text_num = 0;
-      cube->var.color = RED;
+      //cube->var.color = RED;
       if ((stepX == 1) && ((stepY == -1) || stepY == 1))
 	    {
         cube->var.text_num = 1;
-			  cube->var.color = BLUE;
+			  //cube->var.color = BLUE;
 	    }
       if (cube->var.side == 1)
 	    {
         cube->var.text_num = 2;
-       cube->var.color = YELLOW;
+      // cube->var.color = YELLOW;
         if ((stepY == 1) && ((stepX == -1) || stepX == 1))
 		    {
           cube->var.text_num = 3;
-				  cube->var.color = GREEN;
+				//  cube->var.color = GREEN;
 		    }
       }
       
     drawy(i, drawStart, drawEnd, cube);
        
-      cube->var.ZBuffer[i] = cube->var.perpWallDist;
+      cube->var.ZBuffer[i] = cube->var.perpWallDist; //SPRITE INTO ACCOUNT
       i++;                      
     }
 
     
   
-
-    double spriteX = sprite[0].x - cube->var.posX;
-    double spriteY = sprite[0].y - cube->var.posY;
-      
-    double invDet = 1.0 / (cube->var.planeX * cube->var.dirY - cube->var.dirX * cube->var.planeY); //required for correct matrix multiplication
-
-    double transformX = invDet * (cube->var.dirY * spriteX - cube->var.dirX * spriteY);
-    double transformY = invDet * (-(cube->var.planeY) * spriteX + cube->var.planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
-
-    int spriteScreenX = (int)((WIDTH / 2) * (1 + transformX / transformY));
-
-          //calculate height of the sprite on screen
-      int spriteHeight = abs((int)(HEIGHT / (transformY))); //using 'transformY' instead of the real distance prevents fisheye
-      //calculate lowest and highest pixel to fill in current stripe
-      int drawStartY = -spriteHeight / 2 + HEIGHT / 2;
-      if(drawStartY < 0) 
-        drawStartY = 0;
-      int drawEndY = spriteHeight / 2 + HEIGHT / 2;
-      if(drawEndY >= HEIGHT) 
-        drawEndY = HEIGHT - 1;
-      int spriteWidth = abs((int)(HEIGHT / (transformY)));
-      int drawStartX = -spriteWidth / 2 + spriteScreenX;
-      if(drawStartX < 0) 
-        drawStartX = 0;
-      int drawEndX = spriteWidth / 2 + spriteScreenX;
-      if(drawEndX >= WIDTH) 
-        drawEndX = WIDTH - 1;
-      double y_text;
-      int stripe = drawStartX;
-      
-      int len;
-    //  int img_size = 1564;
-       int img_size = 64;
-      double x_text;
-      while (stripe < drawEndX)
-      {
-        x_text = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * img_size / spriteWidth) / 256;
-        
-       if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < cube->var.ZBuffer[stripe])
-       {
-          int y = drawStartY;
-          while (y < drawEndY)
-          {
-            int d = y * 256 - HEIGHT * 128 + spriteHeight * 128;
-            len = 4 * WIDTH * y + stripe * 4;
-            y_text = (d * img_size / spriteHeight)/256;
-           if (cube->text[4].img_addr[(int)y_text % img_size * cube->text[4].length + 
-            (int)x_text % img_size * (cube->text[4].bpp / 8)] != 0)
-              ft_memcpy(&cube->mlx.img.addr[len], &cube->text[4].img_addr[(int)y_text % img_size * cube->text[4].length + 
-            (int)x_text % img_size * (cube->text[4].bpp / 8)], sizeof(int));
-            y++;
-          }
-       }
-      stripe++;
-      }
-  
+//
+//    double spriteX = sprite[0].x - cube->var.posX;
+//    double spriteY = sprite[0].y - cube->var.posY;
+//      
+//    double invDet = 1.0 / (cube->var.planeX * cube->var.dirY - cube->var.dirX * cube->var.planeY); //required for correct matrix multiplication
+//
+//    double transformX = invDet * (cube->var.dirY * spriteX - cube->var.dirX * spriteY);
+//    double transformY = invDet * (-(cube->var.planeY) * spriteX + cube->var.planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
+//
+//    int spriteScreenX = (int)((WIDTH / 2) * (1 + transformX / transformY));
+//
+//          //calculate height of the sprite on screen
+//      int spriteHeight = abs((int)(HEIGHT / (transformY))); //using 'transformY' instead of the real distance prevents fisheye
+//      //calculate lowest and highest pixel to fill in current stripe
+//      int drawStartY = -spriteHeight / 2 + HEIGHT / 2;
+//      if(drawStartY < 0) 
+//        drawStartY = 0;
+//      int drawEndY = spriteHeight / 2 + HEIGHT / 2;
+//      if(drawEndY >= HEIGHT) 
+//        drawEndY = HEIGHT - 1;
+//      int spriteWidth = abs((int)(HEIGHT / (transformY)));
+//      int drawStartX = -spriteWidth / 2 + spriteScreenX;
+//      if(drawStartX < 0) 
+//        drawStartX = 0;
+//      int drawEndX = spriteWidth / 2 + spriteScreenX;
+//      if(drawEndX >= WIDTH) 
+//        drawEndX = WIDTH - 1;
+//      double y_text;
+//      int stripe = drawStartX;
+//      
+//      int len;
+//    //  int img_size = 1564;
+//       int img_size = 64;
+//      double x_text;
+//      while (stripe < drawEndX)
+//      {
+//        x_text = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * img_size / spriteWidth) / 256;
+//        
+//       if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < cube->var.ZBuffer[stripe])
+//       {
+//          int y = drawStartY;
+//          while (y < drawEndY)
+//          {
+//            int d = y * 256 - HEIGHT * 128 + spriteHeight * 128;
+//            len = 4 * WIDTH * y + stripe * 4;
+//            y_text = (d * img_size / spriteHeight)/256;
+//           if (cube->text[4].img_addr[(int)y_text % img_size * cube->text[4].length + 
+//            (int)x_text % img_size * (cube->text[4].bpp / 8)] != 0)
+//              ft_memcpy(&cube->mlx.img.addr[len], &cube->text[4].img_addr[(int)y_text % img_size * cube->text[4].length + 
+//            (int)x_text % img_size * (cube->text[4].bpp / 8)], sizeof(int));
+//            y++;
+//          }
+//       }
+//      stripe++;
+//      }
+//  
     mlx_put_image_to_window(cube->mlx.ptr, cube->mlx.win, cube->mlx.img.image, 0, 0);
 
     return (0);
@@ -546,7 +544,6 @@ int   key_release(int key, t_cub3d *cube)
     cube->var.key_left = 0;
   if (key == 124)
     cube->var.key_right = 0;
-
   return (0);
 }
 
